@@ -3,7 +3,6 @@ This example shows how to use webhook on behind of any reverse proxy (nginx, tra
 """
 import logging
 import sys
-from os import getenv
 from dotenv import load_dotenv
 
 from aiohttp import web
