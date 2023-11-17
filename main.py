@@ -14,19 +14,17 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
+from core.utils.config import (
+    BOT_TOKEN,
+    WEBHOOK_SECRET,
+    BASE_WEBHOOK_URL,
+    WEB_SERVER_PORT,
+    WEB_SERVER_HOST,
+    WEBHOOK_PATH,
+)
+
 load_dotenv()
 
-BOT_TOKEN = getenv("BOT_TOKEN")
-WEBHOOK_SECRET = getenv("WEBHOOK_SECRET")
-BASE_WEBHOOK_URL = getenv("BASE_WEBHOOK_URL")
-WEB_SERVER_HOST = getenv("WEB_SERVER_HOST")
-
-
-# Port for incoming request from reverse proxy. Should be any available port
-WEB_SERVER_PORT = getenv("WEB_SERVER_PORT")
-
-# Path to webhook route, on which Telegram will send requests
-WEBHOOK_PATH = getenv("WEBHOOK_PATH")
 
 # All handlers should be attached to the Router (or Dispatcher)
 router = Router()
