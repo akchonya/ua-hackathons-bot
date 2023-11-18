@@ -1,55 +1,27 @@
-"""
-This example shows how to use webhook on behind of any reverse proxy (nginx, traefik, ingress etc.)
-"""
 import logging
 import sys
-from dotenv import load_dotenv
 
+from aiogram import Bot, Dispatcher
+from aiogram.enums import ParseMode
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from aiogram import Bot, Dispatcher, Router, types
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
-from aiogram.types import Message
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-
 from core.handlers.api_request import router as job_router
+from core.handlers.start import router as start_router
 from core.middlewares.apscheduler_mw import SchedulerMiddleware
+from core.utils.commands import set_commands
 from core.utils.config import (
-    BOT_TOKEN,
-    WEBHOOK_SECRET,
     BASE_WEBHOOK_URL,
-    WEB_SERVER_PORT,
+    BOT_TOKEN,
     WEB_SERVER_HOST,
+    WEB_SERVER_PORT,
     WEBHOOK_PATH,
+    WEBHOOK_SECRET,
 )
-
-load_dotenv()
-
-
-# All handlers should be attached to the Router (or Dispatcher)
-router = Router()
-
-
-@router.message(CommandStart())
-async def command_start_handler(message: Message) -> None:
-    """
-    This handler receives messages with `/start` command
-    """
-    await message.answer(
-        "👋🏻 привіт всім! це ботік для каналу @ua_hackathons\n\n"
-        "наразі він взагалі нічого не вміє робити так шо всєм *стікєр майнкрафт пока*"
-    )
-
-
-# @router.message()
-# async def echo_handler(message: types.Message) -> None:
-#     await message.answer("🔝 Main Menu")
 
 
 async def on_startup(bot: Bot) -> None:
-    # If you have a self-signed SSL certificate, then you will need to send a public
-    # certificate to Telegram
+    await set_commands(bot)
     await bot.set_webhook(
         f"{BASE_WEBHOOK_URL}{WEBHOOK_PATH}", secret_token=WEBHOOK_SECRET
     )
@@ -62,7 +34,7 @@ def main() -> None:
 
     dp.update.middleware(SchedulerMiddleware(scheduler))
     # ... and all other routers should be attached to Dispatcher
-    dp.include_routers(router, job_router)
+    dp.include_routers(start_router, job_router)
 
     # Register startup hook to initialize webhook
     dp.startup.register(on_startup)

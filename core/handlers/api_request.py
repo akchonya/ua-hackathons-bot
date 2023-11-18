@@ -18,7 +18,7 @@ async def job(bot: Bot):
         text = (
             f"{html.bold(ad['title'])}\n\n"
             + f"📝 {ad['description']}\n\n📅 дата: {ad['date']}\n\n"
-            + f"{html.link('ℹ️ дізнатися більше', ad['link'])}"
+            + f"{html.link('ℹ️ дізнатися більше', ad['link'])}{html.link('&#8204', ad['image_url'])}"
         )
         await bot.send_message(chat_id="@ua_hackathons", text=text)
 
