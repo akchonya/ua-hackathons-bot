@@ -6,6 +6,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from core.utils.request_func import make_async_request
+from core.filters.basic import isAdmin
 
 router = Router()
 
@@ -23,7 +24,7 @@ async def job(bot: Bot):
         await bot.send_message(chat_id="@ua_hackathons", text=text)
 
 
-@router.message(Command("schedule_api"))
+@router.message(Command("schedule_api"), isAdmin())
 async def schedule_api_handler(message: Message, bot: Bot, scheduler: AsyncIOScheduler):
     scheduler.add_job(
         job,
@@ -41,13 +42,13 @@ async def schedule_api_handler(message: Message, bot: Bot, scheduler: AsyncIOSch
     )
 
 
-@router.message(Command("stop_api"))
+@router.message(Command("stop_api"), isAdmin())
 async def stop_api_handler(message: Message, scheduler: AsyncIOScheduler):
     scheduler.remove_all_jobs()
     await message.answer("Scheduler stopped.", reply_markup=ReplyKeyboardRemove())
 
 
-@router.message(Command("check_jobs"))
+@router.message(Command("check_jobs"), isAdmin())
 async def check_jobs_handler(message: Message, scheduler: AsyncIOScheduler):
     jobs = scheduler.get_jobs()
     if len(jobs):
