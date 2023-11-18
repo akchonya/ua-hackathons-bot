@@ -50,7 +50,12 @@ async def stop_api_handler(message: Message, scheduler: AsyncIOScheduler):
 @router.message(Command("check_jobs"))
 async def check_jobs_handler(message: Message, scheduler: AsyncIOScheduler):
     jobs = scheduler.get_jobs()
-    for job in jobs:
+    if len(jobs):
+        for job in jobs:
+            await message.answer(
+                f"Job '{job.name}' with ID {job.id} \n\nscheduled at: {job.next_run_time}"
+            )
+    else:
         await message.answer(
-            f"Job '{job.name}' with ID {job.id} \n\nscheduled at: {job.next_run_time}"
+            "а ви ще не запускали работягу..", reply_markup=ReplyKeyboardRemove()
         )
