@@ -6,13 +6,15 @@ import sys
 from dotenv import load_dotenv
 
 from aiohttp import web
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
+from core.handlers.api_request import router as job_router
+from core.middlewares.apscheduler_mw import SchedulerMiddleware
 from core.utils.config import (
     BOT_TOKEN,
     WEBHOOK_SECRET,
@@ -56,8 +58,11 @@ async def on_startup(bot: Bot) -> None:
 def main() -> None:
     # Dispatcher is a root router
     dp = Dispatcher()
+    scheduler = AsyncIOScheduler()
+
+    dp.update.middleware(SchedulerMiddleware(scheduler))
     # ... and all other routers should be attached to Dispatcher
-    dp.include_router(router)
+    dp.include_routers(router, job_router)
 
     # Register startup hook to initialize webhook
     dp.startup.register(on_startup)
