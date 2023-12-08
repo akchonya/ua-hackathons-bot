@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from aiogram import Bot, Router, html
 from aiogram.filters import Command
@@ -15,13 +16,18 @@ async def job(bot: Bot):
     response = await make_async_request(
         "https://hackathons-scrapper.onrender.com/hackathons"
     )
-    for ad in response:
-        text = (
-            f"{html.bold(ad['title'])}\n\n"
-            + f"📝 {ad['description']}\n\n📅 дата: {ad['date']}\n\n"
-            + f"{html.link('ℹ️ дізнатися більше', ad['link'])}{html.link('&#8204', ad['image_url'])}"
-        )
-        await bot.send_message(chat_id="@ua_hackathons", text=text)
+
+    if response.status == 200:
+        response = await response.json()
+        for ad in response:
+            text = (
+                f"{html.bold(ad['title'])}\n\n"
+                + f"📝 {ad['description']}\n\n📅 дата: {ad['date']}\n\n"
+                + f"{html.link('ℹ️ дізнатися більше', ad['link'])}{html.link('&#8204', ad['image_url'])}"
+            )
+            await bot.send_message(chat_id="@ua_hackathons", text=text)
+    elif response.status == 400:
+        logging.INFO("No new updates")
 
 
 @router.message(Command("schedule_api"), isAdmin())
