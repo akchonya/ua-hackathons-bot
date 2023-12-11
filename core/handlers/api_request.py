@@ -27,7 +27,7 @@ async def job(bot: Bot):
             )
             await bot.send_message(chat_id="@ua_hackathons", text=text)
     elif response.status == 400:
-        logging.INFO("No new updates")
+        logging.info("No new updates")
 
 
 @router.message(Command("schedule_api"), isAdmin())
